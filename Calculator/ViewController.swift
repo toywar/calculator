@@ -26,7 +26,6 @@ class ViewController: UIViewController {
     }
     
     @IBAction func operate(sender: UIButton) {
-        let m_pi = M_PI
         let operation = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
             enter()
@@ -39,7 +38,7 @@ class ViewController: UIViewController {
         case "√": performUnaryOperation() { sqrt($0) }
         case "sin": performUnaryOperation() { sin($0) }
         case "cos": performUnaryOperation() { cos($0) }
-        case "π": displayValue = m_pi; enter()
+        case "π": displayValue = M_PI; enter()
         default: break
         }
     }
