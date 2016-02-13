@@ -14,6 +14,8 @@ class ViewController: UIViewController {
     
     var userIsInTheMiddleOfTypingANumber = false
     
+    var brain = CalculatorBrain()
+    
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
@@ -28,43 +30,26 @@ class ViewController: UIViewController {
     }
     
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
         if userIsInTheMiddleOfTypingANumber {
             enter()
         }
-        switch operation {
-        case "×": performBinaryOperation() { $0 * $1 }
-        case "÷": performBinaryOperation() { $1 / $0 }
-        case "−": performBinaryOperation() { $1 - $0 }
-        case "+": performBinaryOperation() { $0 + $1 }
-        case "√": performUnaryOperation() { sqrt($0) }
-        case "sin": performUnaryOperation() { sin($0) }
-        case "cos": performUnaryOperation() { cos($0) }
-        case "π": displayValue = M_PI; enter()
-        default: break
+        if let operation = sender.currentTitle {
+            if let result = brain.performOperation(operation) {
+                displayValue = result
+            } else {
+                displayValue = 0
+            }
         }
     }
     
-    func performBinaryOperation(operation: (Double, Double) -> Double) {
-        if operandStack.count >= 2 {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enter()
-        }
-    }
-    
-    func performUnaryOperation(operation: Double -> Double) {
-        if operandStack.count >= 1 {
-            displayValue = operation(operandStack.removeLast())
-            enter()
-        }
-    }
-    
-    var operandStack = Array<Double>()
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        operandStack.append(displayValue)
-        print("operandStack = \(operandStack)")
+        if let result = brain.pushOperand(displayValue) {
+            displayValue =  result
+        } else {
+            displayValue = 0
+        }
     }
     
     @IBAction func backspace(sender: UIButton) {
@@ -78,7 +63,7 @@ class ViewController: UIViewController {
     
     @IBAction func clear(sender: UIButton) {
         display.text = "0"
-        operandStack.removeAll()
+//        operandStack.removeAll()
     }
     
     var displayValue: Double {
