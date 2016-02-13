@@ -72,6 +72,7 @@ class ViewController: UIViewController {
             display.text = String(display.text!.characters.dropLast())
         } else {
             userIsInTheMiddleOfTypingANumber = false
+            display.text = "0"
         }
     }
     
