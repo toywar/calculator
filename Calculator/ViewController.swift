@@ -67,6 +67,14 @@ class ViewController: UIViewController {
         print("operandStack = \(operandStack)")
     }
     
+    @IBAction func backspace(sender: UIButton) {
+        if display.text!.characters.count > 1 {
+            display.text = String(display.text!.characters.dropLast())
+        } else {
+            userIsInTheMiddleOfTypingANumber = false
+        }
+    }
+    
     @IBAction func clear(sender: UIButton) {
         display.text = "0"
         operandStack.removeAll()
