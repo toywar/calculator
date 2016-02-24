@@ -14,6 +14,7 @@ class CalculatorBrain {
         case Operand(Double)
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double, Double) -> Double)
+        case ConstantOperation(String, () -> Double)
         
         var description: String {
             get {
@@ -23,6 +24,8 @@ class CalculatorBrain {
                 case .UnaryOperation(let symbol, _):
                     return symbol
                 case .BinaryOperation(let symbol, _):
+                    return symbol
+                case .ConstantOperation (let symbol, _):
                     return symbol
                 }
             }
@@ -44,6 +47,7 @@ class CalculatorBrain {
         knownOps["√"] = Op.UnaryOperation("√", sqrt)
         knownOps["cos"] = Op.UnaryOperation("cos", cos)
         knownOps["sin"] = Op.UnaryOperation("sin", sin)
+        knownOps["π"] = Op.ConstantOperation("π", { M_PI })
     }
     
     var program : AnyObject { //PropertyList
@@ -72,11 +76,16 @@ class CalculatorBrain {
             switch op {
             case .Operand(let operand):
                 return (operand, remainingOps)
+            
+            case .ConstantOperation(_, let operation):
+                return (operation(), remainingOps)
+                
             case .UnaryOperation(_, let operation):
                 let operandEvaluation = evaluate(remainingOps)
                 if let operand = operandEvaluation.result {
                     return (operation(operand), operandEvaluation.remainingOps)
                 }
+                
             case .BinaryOperation(_, let operation):
                 let op1Evaluation = evaluate(remainingOps)
                 if let operand1 = op1Evaluation.result {
