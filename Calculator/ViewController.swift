@@ -11,6 +11,7 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var display: UILabel!
+    @IBOutlet weak var history: UILabel!
     
     var userIsInTheMiddleOfTypingANumber = false
     
@@ -36,8 +37,10 @@ class ViewController: UIViewController {
         if let operation = sender.currentTitle {
             if let result = brain.performOperation(operation) {
                 displayValue = result
+                history.text = history.text! + " ="
             } else {
                 displayValue = 0
+                history.text = history.text! + " = Error"
             }
         }
     }
@@ -45,7 +48,7 @@ class ViewController: UIViewController {
     
     @IBAction func enter() {
         userIsInTheMiddleOfTypingANumber = false
-        if let result = brain.pushOperand(displayValue) {
+        if let result = brain.pushOperand(displayValue!) {
             displayValue =  result
         } else {
             displayValue = 0
@@ -63,16 +66,23 @@ class ViewController: UIViewController {
     
     @IBAction func clear(sender: UIButton) {
         display.text = "0"
-//        operandStack.removeAll()
     }
     
-    var displayValue: Double {
+    var displayValue: Double? {
         get {
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            if let displayText = display.text {
+                return NSNumberFormatter().numberFromString(displayText)?.doubleValue
+            }
+            return nil
         }
         set {
-            display.text = "\(newValue)"
+            if (newValue != nil) {
+                display.text = NSNumberFormatter().stringFromNumber(newValue!)
+            } else {
+                display.text = " "
+            }
             userIsInTheMiddleOfTypingANumber = false
+            history.text = brain.displayStack() ?? " "
         }
     }
 }

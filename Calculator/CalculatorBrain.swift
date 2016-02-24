@@ -41,13 +41,13 @@ class CalculatorBrain {
             knownOps[op.description] = op
         }
         learnOp(Op.BinaryOperation("×", *))
-        knownOps["÷"] = Op.BinaryOperation("÷") { $1 / $0 }
-        knownOps["+"] = Op.BinaryOperation("+", +)
-        knownOps["−"] = Op.BinaryOperation("−") { $1 - $0 }
-        knownOps["√"] = Op.UnaryOperation("√", sqrt)
-        knownOps["cos"] = Op.UnaryOperation("cos", cos)
-        knownOps["sin"] = Op.UnaryOperation("sin", sin)
-        knownOps["π"] = Op.ConstantOperation("π", { M_PI })
+        learnOp(Op.BinaryOperation("÷", { $1 / $0 }))
+        learnOp(Op.BinaryOperation("+", +))
+        learnOp(Op.BinaryOperation("−", { $1 - $0 }))
+        learnOp(Op.UnaryOperation("√", sqrt))
+        learnOp(Op.UnaryOperation("sin", sin))
+        learnOp(Op.UnaryOperation("cos", cos))
+        learnOp(Op.ConstantOperation("π", { M_PI }))
     }
     
     var program : AnyObject { //PropertyList
@@ -97,6 +97,10 @@ class CalculatorBrain {
             }
         }
         return (nil, ops)
+    }
+    
+    func displayStack() -> String? {
+         return opStack.isEmpty ? nil : opStack.map{ $0.description }.joinWithSeparator(" ")
     }
     
     func evaluate() -> Double? {
